@@ -1,0 +1,393 @@
+%% * Copyright (c) toshunster, 2019
+%% *
+%% * All rights reserved.
+%% *
+%% * Redistribution and use in source and binary forms, with or without
+%% * modification, are permitted provided that the following conditions are met:
+%% *     * Redistributions of source code must retain the above copyright
+%% *       notice, this list of conditions and the following disclaimer.
+%% *     * Redistributions in binary form must reproduce the above copyright
+%% *       notice, this list of conditions and the following disclaimer in the
+%% *       documentation and/or other materials provided with the distribution.
+%% *     * Neither the name of the w495 nor the
+%% *       names of its contributors may be used to endorse or promote products
+%% *       derived from this software without specific prior written permission.
+%% *
+%% * THIS SOFTWARE IS PROVIDED BY w495 ''AS IS'' AND ANY
+%% * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+%% * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+%% * DISCLAIMED. IN NO EVENT SHALL w495 BE LIABLE FOR ANY
+%% * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+%% * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+%% * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+%% * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+%% * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+%% * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+\documentclass[pdf, unicode, 12pt, a4paper,oneside,fleqn]{article}
+\usepackage{log-style}
+\begin{document}
+\begin{titlepage}
+    \begin{center}
+    \bfseries
+    
+    {\Large Московский авиационный институт\\ (национальный исследовательский университет)
+    
+    }
+    
+    \vspace{48pt}
+    
+    {\large Факультет информационных технологий и прикладной математики
+    }
+    
+    \vspace{36pt}
+    
+    {\large Кафедра вычислительной математики и~программирования
+    
+    }
+    
+    
+    \vspace{48pt}
+    
+    Лабораторная работа \textnumero 1 по курсу \enquote{Дискретный анализ}
+    
+    \end{center}
+    
+    \vspace{72pt}
+    
+    \begin{flushright}
+    \begin{tabular}{rl}
+    Студент: & А.\,К. Носов \\
+    Преподаватель: & А.\,А. Кухтичев \\
+    Группа: & М8О-206Б-22 \\
+    Дата: & \\
+    Оценка: & \\
+    Подпись: & \\
+    \end{tabular}
+    \end{flushright}
+    
+    \vfill
+    
+    \begin{center}
+    \bfseries
+    Москва, \the\year
+    \end{center}
+    \end{titlepage}
+    
+    \pagebreak
+
+\CWHeader{Лабораторная работа \textnumero 1}
+
+\CWProblem{
+Требуется разработать программу, осуществляющую ввод пар \enquote{ключ-значение}, их 
+упорядочивание по возрастанию ключа указанным алгоритмом сортировки за линейное время и вывод отсортированной последовательности.
+
+{\bfseries Вариант сортировки:} Поразрядная сортировка.
+
+{\bfseries Вариант ключа:} { \normalfont\ttfamily автомобильные номера в формате A 999 BC (используются буквы латинского алфавита).}
+
+{\bfseries Вариант значения:} { \normalfont\ttfamily  строки фиксированной длины 64 символа, во входных данных могут встретиться строки меньшей длины, при этом строка дополняется до 64-х нулевыми символами, которые не выводятся на экран.}
+}
+\pagebreak
+\section{Описание}
+
+Интернет-ресурс [3] дает следующее описание алгоритма сортировки подсчетом:
+
+
+Алгоритм сортировки подсчетом предназначен для сортировки целых чисел, записанных цифрами. Но так как в памяти компьютеров любая информация записывается целыми числами, алгоритм пригоден для сортировки любых объектов, запись которых можно поделить на \enquote{разряды}, содержащие сравнимые значения. Например, так сортировать можно не только числа, записанные в виде набора цифр, но и строки, являющиеся набором символов, и вообще произвольные значения в памяти, представленные в виде набора байт.
+
+Сравнение производится поразрядно: сначала сравниваются значения одного крайнего разряда, и элементы группируются по результатам этого сравнения, затем сравниваются значения следующего разряда, соседнего, и элементы либо упорядочиваются по результатам сравнения значений этого разряда внутри образованных на предыдущем проходе групп, либо переупорядочиваются в целом, но сохраняя относительный порядок, достигнутый при предыдущей сортировке. Затем аналогично делается для следующего разряда, и так до конца.
+
+Так как выравнивать сравниваемые записи относительно друг друга можно в разную сторону, на практике существуют два варианта этой сортировки. Для чисел они называются в терминах значимости разрядов числа, и получается так: можно выровнять записи чисел в сторону менее значащих цифр (по правой стороне, в сторону единиц, least significant digit, LSD) или более значащих цифр (по левой стороне, со стороны более значащих разрядов, most significant digit, MSD).
+
+При LSD сортировке (сортировке с выравниванием по младшему разряду, направо, к единицам) получается порядок, уместный для чисел. Например: 1, 2, 9, 10, 21, 100, 200, 201, 202, 210. То есть, здесь значения сначала сортируются по единицам, затем сортируются по десяткам, сохраняя отсортированность по единицам внутри десятков, затем по сотням, сохраняя отсортированность по десяткам и единицам внутри сотен, и т. п.
+
+При MSD сортировке (с выравниванием в сторону старшего разряда, налево), получается алфавитный порядок, который уместен для сортировки строк текста. Например \enquote{b, c, d, e, f, g, h, i, j, ba} отсортируется как \enquote{b, ba, c, d, e, f, g, h, i, j}. Если MSD применить к числам, приведённым в примере получим последовательность 1, 10, 100, 2, 200, 201, 202, 21, 210, 9.
+
+Накапливать при каждом проходе сведения о группах можно разными способами — например в списках, в деревьях, в массивах, выписывая в них либо сами элементы, либо их индексы и т. п.
+
+\pagebreak
+
+\section{Исходный код}
+Здесь должно быть подробное описание программы и основные этапы написания кода.
+
+На каждой непустой строке входного файла располагается пара \enquote{ключ-значение}, поэтому создадим новую 
+структуру $KV$, в которой будем хранить ключ и значение. И так далее.
+
+Метод решения
+Для совместного хранения ключей и значений, создана структура $KV$ (она состоит из массива $char key[9]$ и $char value[64]$ для хранения ключа и значения соответственно). Считываю данные и добавляю их в вектор, который в последствии передаю в функцию поразрядной сортировки $RadixSort$, работающую по следующему алгоритму:
+
+1. Итерация по каждому символу в ключе (8 символов):
+   - Для каждого символа в ключе, начиная с наименее значимого символа:
+
+2. Проверка символа:
+   - Если символ является цифрой:
+     - Увеличить соответствующий счетчик в digc.
+     - Обновить счетчики для вышестоящих цифр.
+     - Перенести элементы в temp в отсортированном порядке на основе счетчиков.
+   - Если символ является заглавной буквой:
+     - Увеличить соответствующий счетчик в charc.
+     - Обновить счетчики для вышестоящих букв.
+     - Перенести элементы в temp в отсортированном порядке на основе счетчиков.
+
+3. Сброс счетчиков:
+   - Обнулить счетчики charc и digc после каждого цикла.
+
+4. Копирование отсортированного массива:
+   - Скопировать элементы из temp обратно в исходный массив vect.
+
+Алгоритм имеет сложность времени O(mn), где m - количество элементов в массиве, а n - длина ключа, в данном случае 8.
+
+lab1.cpp
+\begin{lstlisting}[language=C]
+    #include <iostream>
+
+    struct KV{
+        char key[9];
+        char value[65];
+    };
+    
+    class TVect {
+        int size;
+        int cap;
+        KV* vectData;
+    
+    public:
+         TVect() {
+            size = 0;
+            cap = 0;
+            vectData = new KV[2];
+        }
+    
+        TVect(int i) {
+            size = i;
+            cap = i;
+            vectData = new KV[i];
+        }
+    
+        KV& operator[] (int k) {
+            return vectData[k];
+        }
+    
+        int VectSize() {
+            return size;
+        }
+    
+        void PushBack(KV element) {
+            if (size == cap) {
+                    if (cap == 0) {
+                        cap = 1;
+                    }
+                    cap *=2;
+                    KV* temp = new KV[cap];
+                    for (int j = 0; j < size; j++) {
+                        temp[j] = vectData[j];
+                    }
+                    delete [] vectData;
+                    vectData = temp;
+            }
+            vectData[size] = element;
+            size++;
+        }
+    
+        ~TVect() {
+            delete [] vectData;
+        }
+    };
+    
+    void RadixSort(TVect &vect){
+        char charc[36] = {};
+        char digc[10] = {};
+        TVect temp(vect.VectSize());
+        for (int i = 8; i != 0; i--){
+            if (vect[0].key[i-1] == ' ') {
+                continue;
+            } 
+            if (vect[0].key[i-1] >= '0' && vect[0].key[i-1] <= '9') {
+                int p = 0;
+                int m = 0;
+                for (p = 0; p < vect.VectSize(); p++) {
+                    digc[vect[p].key[i-1] - '0'] += 1;
+                }
+                for (m = 1; m < 10; m++) {
+                    digc[m] += digc[m - 1];
+                }
+                for (p = vect.VectSize(); p != 0; p--) {
+                    --digc[vect[p - 1].key[i-1] - '0'];
+                    temp[digc[vect[p - 1].key[i-1] - '0']] = vect[p - 1];
+                }
+            } 
+            
+            else {
+                int p = 0;
+                int m = 0;
+                for (p = 0; p < vect.VectSize(); p++) {
+                    charc[vect[p].key[i-1] - 'A'] += 1;
+                }
+                for (m = 1; m < 26; m++) {
+                    charc[m] += charc[m - 1];
+                }
+                for (p = vect.VectSize(); p != 0; p--) {
+                    --charc[vect[p - 1].key[i-1] - 'A'];
+                    temp[charc[vect[p - 1].key[i-1] - 'A']] = vect[p - 1];
+                }
+            }
+            for (int k = 0; k < 26; k++) {
+                charc[k] = 0;
+            }
+            for (int k = 0; k < 10; k++) {
+                digc[k] = 0;
+            }
+            for (int m = 0; m < vect.VectSize(); m++) {
+                vect[m] = temp[m];
+            }
+    
+        }
+    }
+    
+    int main()
+    {
+        KV el;
+        TVect data;
+        char str[74];
+        while (true)
+        {	
+    
+            str[0] = '\0';
+            std::cin.getline(str, 74);
+            int k = 0;
+            int j = 0;
+            if (std::cin.eof()) {
+                break;
+            }
+            for (k = 0; k < 8; k++) {
+                el.key[k] = str[k];
+            }
+            el.key[8] = '\0';
+            k += 1;
+            while (k < 74) {
+                el.value[j++] = str[k++];
+            }
+            data.PushBack(el);
+            for (int i = 0; i < 74; i ++){
+                str[i] = '\0';
+            }
+            for (int i = 0; i < 64; i ++){
+                el.value[i] = '\0';
+            }
+        }
+    
+    
+        RadixSort(data);
+        
+        for (int j = 0; j < data.VectSize(); j++) {
+            std::cout << data[j].key << '\t' << data[j].value << std::endl;
+        }
+        return 0;
+    }
+\end{lstlisting}
+
+
+\section{Консоль}
+\begin{alltt}
+    alex@alex-HP-ENVY-x360-Convertible-13-ay1xxx:~/Desktop/DiskrAn/lab1/src$ g++ lab1.cpp
+    alex@alex-HP-ENVY-x360-Convertible-13-ay1xxx:~/Desktop/DiskrAn/lab1/src$ ./a.out < input.txt
+    A 658 MJ        ryuabk1mbxzao2uetjs3h1v619lp3ruievbwwd8mph
+    B 406 CU        8lq1uloi0mry
+    B 417 QJ        hg
+    E 131 VR        kluidx0qf2oa053p48gbkb7xjiczqy6apbb6t8zv6335x2mscds7b
+    F 436 PF        t0wst8jcn0gmi0q3oc73jqgd86ee
+    G 046 IS        zhywl3nk6xdoqadirvle7bm8funn368ui4gqh08404
+    H 669 AB        d3rz838jra3b38vgjuov3d3ep216zntq
+    H 705 OV        qyl2jskmmtt8lx9ej1wtk1rt2uprcmgco6uain1hfnoe
+    I 023 VT        blv0ezn45myxx8sv4bt93ti3ysro4at32snhsmpiblxobzt2
+    I 349 FE        d880k82o1an7
+    I 937 QQ        sowjvpqyp03r9j2f9qrrvwp8n78
+    J 068 HK        k935ao4kvhs7fl0gw1dmr5jq36bvcpl7uozshb4ok8qoxr
+    J 469 EL        bjqobk1i1zgmyb8d12wlqfegu2kd2s71pyra4dltpfaeb
+    K 634 BG        xvo3sro2ef3bz37d8z0oqkvh3wg5hxlh9o6te4zq6woxxtxjfc4
+    K 779 PK        ltsxcfvsjoc2c7encjklmza6ptc
+    M 319 YK        iea9i447l8f3sgp3
+    M 421 EJ        qgizb11fjllpyd0ae9w5cjdwwxypmnpkeuixx6fdpqvdxwdn
+    N 042 PP        4war2rbmkvn8p9l
+    N 623 CD        iuuk3jzonv938t0reg4gwvrechefz7i5hf0rki4g4
+    N 959 IQ        xyku34iwzcvr7erw5i0
+    O 312 IV        wkx8pkq1kz1ul4ibs2c845j29larp3hc7s9sl0i0tvq
+    P 147 KH        25asyett06jh629qkbconoicy8ch0mqgglwy0daboaa0dw2cbx9yq
+    Q 349 RK        bbsnz7kr51u6etvhpjd16n2apyv4z0952jhhk7fp800kthuln7yctaw9o
+    Q 787 MK        uqilmc
+    S 852 LF        aap66zzq643be0kpzc3ohvxid8carwvxnw8b2v
+    V 451 GL        hsmgxa6n5zfis8qy68kgy1740swo477
+    V 516 XT        5i63n
+    X 703 XX        1
+    X 771 LM        b0uivkrh3v5p9fwejhnukczn4
+    Y 886 HW        f
+\end{alltt}
+\pagebreak
+\section{Тест производительности}
+
+Тест представлял из себя сравнение поразрядной сортировки, реализованной мной в этой лабораторной работе с STL сртировкой. Задачей была сортировка файла, состоящего из 10 000 пар \enquote{ключ-значение}, и их упорядочивание по возрастанию ключа.
+
+\begin{alltt}
+[info][Пт 23 авг 2024 18:01:22 MSK] Compiling OK
+[info][Пт 23 авг 2024 18:01:22 MSK] Stage #2. Test generating...
+[info][Пт 23 авг 2024 18:01:22 MSK] Test generating OK
+[info][Пт 23 авг 2024 18:01:22 MSK] Stage #3. Chacking...
+[info][Пт 23 авг 2024 18:01:22 MSK] tests/01.t, lines = 51 OK
+[info][Пт 23 авг 2024 18:01:22 MSK] tests/02.t, lines = 981 OK
+[info][Пт 23 авг 2024 18:01:22 MSK] tests/03.t, lines = 978 OK
+[info][Пт 23 авг 2024 18:01:22 MSK] tests/04.t, lines = 443 OK
+[info][Пт 23 авг 2024 18:01:22 MSK] tests/05.t, lines = 891 OK
+[info][Пт 23 авг 2024 18:01:22 MSK] tests/06.t, lines = 794 OK
+[info][Пт 23 авг 2024 18:01:22 MSK] tests/07.t, lines = 464 OK
+[info][Пт 23 авг 2024 18:01:22 MSK] tests/08.t, lines = 597 OK
+[info][Пт 23 авг 2024 18:01:22 MSK] tests/09.t, lines = 23 OK
+[info][Пт 23 авг 2024 18:01:22 MSK] tests/10.t, lines = 765 OK
+[info][Пт 23 авг 2024 18:01:22 MSK] Checking OK
+[info][Пт 23 авг 2024 18:01:22 MSK] Stage #4 Benchmark test generating...
+[info][Пт 23 авг 2024 18:01:41 MSK] Benchmark test generating OK
+[info][Пт 23 авг 2024 18:01:41 MSK] Stage #5 Benchmarking...
+make: 'benchmark' is up to date.
+[info][Пт 23 авг 2024 18:01:41 MSK] Running benchmark.t
+\textbf{Count of lines is 10000
+Counting sort time: 88016us
+STL Sort time: 21800us}
+[info][Пт 23 авг 2024 18:01:53 MSK] Benchmarking OK
+\end{alltt}
+
+Из примера видно, что при больших объемах данных поразрядная сортировка проигрывает STL, однако при меньших объемах, она показывет себя более эффективной.
+
+Также хочется продемонстрировать примерную линейность времени сортировки n – количество пар «ключ-значение» во входном файле
+\begin{enumerate}
+    \item n = 10; time = 0,002s
+    \item n = 100; time = 0,002s
+    \item n = 1000; time = 0,014s
+    \item n = 10000; time = 0,192s
+\end{enumerate}
+\pagebreak
+\section{Выводы}
+
+Выполнив первую лабораторную работу по курсу \enquote{Дискретный анализ}, мною был изучен и реализован алгоритм сортировки за линейное время – поразрядная сортировка.
+
+Сортировка за линейное время наиболее эффективна при обработке небольшого количества данных. Сложность сортировок этого типа – O(m*n), где m – количество разрядов, по которым происходит сортировка, n – объём входных данных. Для сортировки большого количества данных этот тип сортировок будет неэффективен.
+
+Также стоит отметить устойчивость линейных сортировок – элементы с одинаковыми ключами не меняют порядок в отсортированном наборе данных.
+
+\pagebreak
+\begin{thebibliography}{99}
+
+    \bibitem{Kormen}
+    Томас\,Х.\,Кормен, Чарльз\,И.\,Лейзерсон, Рональд\,Л.\,Ривест, Клиффорд\,Штайн.
+    {\itshape Алгоритмы: построение и анализ, 2-е издание.} --- Издательский дом \enquote{Вильямс}, 2007. Перевод с английского: И.\,В.\,Красиков, Н.\,А.\,Орехова, В.\,Н.\,Романов. --- 1296 с. (ISBN 5-8459-0857-4 (рус.))
+
+    \bibitem{gost}
+    \href{http://www.ifap.ru/library/gost/7052008.pdf}{Список использованных источников оформлять нужно по  ГОСТ Р 7.05-2008}
+    
+    \bibitem{wikipedia_radix_sort}
+    {\itshape Поразрядная сортировка — Википедия.} \\URL:
+    \texttt{https://ru.wikipedia.org/wiki/Поразрядная\_сортировка} (дата обращения: 14.03.2024).
+    
+    \end{thebibliography}
+    \pagebreak
+
+\end{document}
