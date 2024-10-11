@@ -1,0 +1,234 @@
+%% * Copyright (c) toshunster, 2019
+%% *
+%% * All rights reserved.
+%% *
+%% * Redistribution and use in source and binary forms, with or without
+%% * modification, are permitted provided that the following conditions are met:
+%% *     * Redistributions of source code must retain the above copyright
+%% *       notice, this list of conditions and the following disclaimer.
+%% *     * Redistributions in binary form must reproduce the above copyright
+%% *       notice, this list of conditions and the following disclaimer in the
+%% *       documentation and/or other materials provided with the distribution.
+%% *     * Neither the name of the w495 nor the
+%% *       names of its contributors may be used to endorse or promote products
+%% *       derived from this software without specific prior written permission.
+%% *
+%% * THIS SOFTWARE IS PROVIDED BY w495 ''AS IS'' AND ANY
+%% * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+%% * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+%% * DISCLAIMED. IN NO EVENT SHALL w495 BE LIABLE FOR ANY
+%% * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+%% * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+%% * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+%% * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+%% * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+%% * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+\documentclass[pdf, unicode, 12pt, a4paper,oneside,fleqn]{article}
+\usepackage{log-style}
+\begin{document}
+\begin{titlepage}
+    \begin{center}
+    \bfseries
+    
+    {\Large Московский авиационный институт\\ (национальный исследовательский университет)
+    
+    }
+    
+    \vspace{48pt}
+    
+    {\large Факультет информационных технологий и прикладной математики
+    }
+    
+    \vspace{36pt}
+    
+    {\large Кафедра вычислительной математики и~программирования
+    
+    }
+    
+    
+    \vspace{48pt}
+    
+    Лабораторная работа \textnumero 3 по курсу \enquote{Дискретный анализ}
+    
+    \end{center}
+    
+    \vspace{72pt}
+    
+    \begin{flushright}
+    \begin{tabular}{rl}
+    Студент: & А.\,К. Носов \\
+    Преподаватель: & А.\,А. Кухтичев \\
+    Группа: & М8О-206Б-22 \\
+    Дата: & \\
+    Оценка: & \\
+    Подпись: & \\
+    \end{tabular}
+    \end{flushright}
+    
+    \vfill
+    
+    \begin{center}
+    \bfseries
+    Москва, \the\year
+    \end{center}
+    \end{titlepage}
+    
+    \pagebreak
+
+    \CWHeader{Лабораторная работа \textnumero 3}
+
+    \CWProblem
+    {Для реализации словаря из предыдущей лабораторной работы, необходимо провести исследование скорости выполнения и потребления оперативной памяти. В случае выявления ошибок или явных недочётов, требуется их исправить.
+    Результатом лабораторной работы является отчёт, состоящий из:
+    Дневника выполнения работы, в котором отражено что и когда делалось, какие средства использовались и какие результаты были достигнуты на каждом шаге выполнения лабораторной работы.
+    Выводов о найденных недочётах.
+    Сравнение работы исправленной программы с предыдущей версией.
+    Общих выводов о выполнении лабораторной работы, полученном опыте.
+    Минимальный набор используемых средств должен содержать утилиту gprof и библиотеку dmalloc, однако их можно заменять на любые другие аналогичные или более развитые утилиты (например, Valgrind или Shark) или добавлять к ним новые (например, gcov).}
+    
+    \CWHeader{Ход выполнения}
+    Для выполнения лабораторной работы я использовал ноутбук операционной системой Ubuntu. Для выполнения анализа использовал программы Valgrind и gproof.
+    \pagebreak
+
+    \section{Valgrind}
+    {Valgrind - инструментальное программное обеспечение, предназначенное для отладки использования памяти, обнаружения утечек памяти, а также профилирования. В ходе выполнения лабораторной работы утилита будет использована исключительно для отладки использования памяти. \\
+    
+    ==113422== Memcheck, a memory error detector \\
+    ==113422== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al. \\
+    ==113422== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info \\
+    ==113422== Command: ./lab2 \\
+    ==113422==  \\
+    + a 1234 \\
+    OK \\
+    + b 214324324 \\
+    OK \\
+    + c 23532523 \\
+    OK \\
+    - a \\
+    OK \\
+    - b \\
+    OK \\
+    c \\
+    OK: 23532523 \\
+    a \\
+    NoSuchWord  \\
+    ! Save asd \\
+    OK \\
+    - c \\
+    OK  \\ 
+    c \\
+    NoSuchWord \\
+    ! Load asd \\
+    OK \\
+    c \\ 
+    OK: 23532523  \\
+    ==113422== 
+    ==113422== HEAP SUMMARY: \\
+    ==113422==     in use at exit: 0 bytes in 0 blocks \\
+    ==113422==   total heap usage: 13 allocs, 13 frees, 92,441 bytes allocated \\
+    ==113422==  \\
+    ==113422== All heap blocks were freed -- no leaks are possible \\ 
+    ==113422==  \\
+    ==113422== For lists of detected and suppressed errors, rerun with: -s \\
+    ==113422== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0) \\
+    
+    Как видим, Valgrind не обнаружил утечек памяти. Можно спать спокойно.}
+    \pagebreak
+
+\section{gprof}
+gprof - это инструмент для профилирования программы. С помощью него мы можем отследить сколько времени и на каком участке кода выполнялась программа, тем самым выявляя слабые участки. Возьмем достаточно большой тест и применим утилиту gprof. \\
+
+\begin{tabbing}
+\%\quad\=cumulative\quad\=self\quad\=\qquad\qquad\qquad\=self\qquad\=total\\
+time\quad\=seconds\quad\=seconds\quad\=calls\quad\=Ts/calls\quad\=Ts/calls\quad\=name\\
+0.00\>0.00\>0.00\>265\>0.00\>0.00\>bool std::operator< <char, std::char\_traits<char>, std::allocator<char> >(std::\_\_cxx11::basic\_string<char, std::char\_traits<char>, std::allocator<char> > const\&, std::\_\_cxx11::basic\_string<char, std::char\_traits<char>, std::allocator<char> > const\&) \\
+
+0.00\>0.00\>0.00\>174\>0.00\>0.00\>std::char\_traits<char>::compare(char const*, char const*, unsigned long) \\
+
+0.00\>0.00\>0.00\>174\>0.00\>0.00\>\_\_gnu\_cxx::\_\_enable\_if<std::\_\_is\_char<char>::\_\_value, bool>::\_\_type std::operator==<char>(std::\_\_cxx11::basic\_string<char, std::char\_traits<char>, std::allocator<char> >\\
+
+0.00\>0.00\>0.00\>174\>0.00\>0.00\>bool std::operator!=<char, std::char\_traits<char>, std::allocator<char> >(std::\_\_cxx11::basic\_string<char, std::char\_traits<char>, std::allocator<char> > const\&, std::\_\_cxx11::basic\_string<char, std::char\_traits<char>, std::allocator<char> > const\&)\\
+
+0.00\>0.00\>0.00\>71\>0.00\>0.00\>bool std::operator><char, std::char\_traits<char>, std::allocator<char> >(std::\_\_cxx11::basic\_string<char, std::char\_traits<char>, std::allocator<char> > const\&, std::\_\_cxx11::basic\_string<char, std::char\_traits<char>, std::allocator<char> > const\&) \\
+
+0.00\>0.00\>0.00\>54\>0.00\>0.00\>KV::~KV() \\
+
+0.00\>0.00\>0.00\>40\>0.00\>0.00\>bool std::operator==<char, std::char\_traits<char>, std::allocator<char> >(std::\_\_cxx11::basic\_string<char, std::char\_traits<char>, std::allocator<char> > const\&, char const*) \\
+
+0.00\>0.00\>0.00\>36\>0.00\>0.00\>KV::KV() \\
+
+0.00\>0.00\>0.00\>29\>0.00\>0.00\>TAVLTree::Find(std::\_\_cxx11::basic\_string<char, std::char\_traits<char>, std::allocator<char> >) \\
+
+0.00\>0.00\>0.00\>23\>0.00\>0.00\>KV::operator=(KV const\&) \\
+
+0.00\>0.00\>0.00\>20\>0.00\>0.00\>TAVLTree::BalanceF(TNode*) \\
+
+0.00\>0.00\>0.00\>20\>0.00\>0.00\>TAVLTree::Balance(TNode*) \\
+
+0.00\>0.00\>0.00\>19\>0.00\>0.00\>TAVLTree::LeftRotate(TNode*) \\
+
+0.00\>0.00\>0.00\>18\>0.00\>0.00\>TAVLTree::RightRotate(TNode*) \\
+
+0.00\>0.00\>0.00\>18\>0.00\>0.00\>AVLTree::Insert(KV) \\
+
+0.00\>0.00\>0.00\>18\>0.00\>0.00\>KV::KV(KV const\&) \\
+
+0.00\>0.00\>0.00\>18\>0.00\>0.00\>TNode::TNode() \\
+
+0.00\>0.00\>0.00\>18\>0.00\>0.00\>TNode::~TNode() \\
+
+0.00\>0.00\>0.00\>11\>0.00\>0.00\>TAVLTree::Remove(TNode*) \\
+
+0.00\>0.00\>0.00\>2\>0.00\>0.00\>\_\_static\_initialization\_and\_destruction\_0(int, int) \\
+
+0.00\>0.00\>0.00\>1\>0.00\>0.00\>TAVLTree::Clear(TNode*) \\
+
+0.00\>0.00\>0.00\>1\>0.00\>0.00\>TAVLTree::TAVLTree() \\
+
+0.00\>0.00\>0.00\>1\>0.00\>0.00\>TAVLTree::~TAVLTree() \\
+\\
+Итак: \\
+**Наиболее часто вызываемые функции:** \\
+\\
+* `\_\_gnu\_cxx::\_\_enable\_if<std::\_\_is\_char<char>::\_\_value, bool>::\_\_type\ std::operator==` \\ для сравнения строк на равенство \\
+* `std::operator!=` для сравнения строк на неравенство \\
+* `std::operator>` для сравнения строк \\
+* `std::operator<` для сравнения строк типа `std::string` \\
+\\
+**Менее часто вызываемые функции:** \\
+\\
+* Деструктор класса `KV` (уничтожение объектов класса `KV`) \\ 
+* Конструктор класса `KV` (создание объектов класса `KV`) \\ 
+* `TAVLTree::Find` для поиска узла в двоичном дереве поиска \\
+* `KV::operator=` для присваивания значений объектам класса `KV` \\
+* `TAVLTree::BalanceF` для нахождения баланс-фактора \\
+* Функции для перебалансировки дерева после вставки и удаления узлов \\ 
+\\
+**Функции, вызываемые редко:** \\ 
+\\
+* Конструктор и деструктор класса `TNode` (для узлов двоичного дерева поиска) \\
+* Функции для статической инициализации и уничтожения в C++ \\ 
+* Удаление всего дерева \\
+\\
+
+\end{tabbing}
+\pagebreak
+
+\section{Выводы}
+Выполняя данную лабораторную работу, я познакомился с очень полезными инструментами и приобрел большой практический опыт. В дальнейшем я буду стараться использовать Valgrind и gprof как можно чаще.
+\pagebreak
+
+\begin{thebibliography}{99}
+
+    \bibitem{Kormen}
+    Томас\,Х.\,Кормен, Чарльз\,И.\,Лейзерсон, Рональд\,Л.\,Ривест, Клиффорд\,Штайн.
+    {\itshape Алгоритмы: построение и анализ, 2-е издание.} --- Издательский дом \enquote{Вильямс}, 2007. Перевод с английского: И.\,В.\,Красиков, Н.\,А.\,Орехова, В.\,Н.\,Романов. --- 1296 с. (ISBN 5-8459-0857-4 (рус.))
+
+    \bibitem{gost}
+    \href{http://www.ifap.ru/library/gost/7052008.pdf}{Список использованных источников оформлять нужно по  ГОСТ Р 7.05-2008}
+    
+    \end{thebibliography}
+    \pagebreak
+
+\end{document}

@@ -1,6 +1,10 @@
 {
     "files.associations": {
         ".fantomasignore": "ignore",
+        "iosfwd": "cpp",
+        "string_view": "cpp",
+        "*.tcc": "cpp",
+        "ostream": "cpp",
         "iostream": "cpp"
     }
 }

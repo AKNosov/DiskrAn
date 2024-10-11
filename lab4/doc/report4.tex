@@ -1,0 +1,294 @@
+%% * Copyright (c) toshunster, 2019
+%% *
+%% * All rights reserved.
+%% *
+%% * Redistribution and use in source and binary forms, with or without
+%% * modification, are permitted provided that the following conditions are met:
+%% *     * Redistributions of source code must retain the above copyright
+%% *       notice, this list of conditions and the following disclaimer.
+%% *     * Redistributions in binary form must reproduce the above copyright
+%% *       notice, this list of conditions and the following disclaimer in the
+%% *       documentation and/or other materials provided with the distribution.
+%% *     * Neither the name of the w495 nor the
+%% *       names of its contributors may be used to endorse or promote products
+%% *       derived from this software without specific prior written permission.
+%% *
+%% * THIS SOFTWARE IS PROVIDED BY w495 ''AS IS'' AND ANY
+%% * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+%% * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+%% * DISCLAIMED. IN NO EVENT SHALL w495 BE LIABLE FOR ANY
+%% * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+%% * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+%% * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+%% * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+%% * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+%% * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+\documentclass[pdf, unicode, 12pt, a4paper,oneside,fleqn]{article}
+\usepackage{log-style}
+\begin{document}
+\begin{titlepage}
+    \begin{center}
+    \bfseries
+    
+    {\Large Московский авиационный институт\\ (национальный исследовательский университет)
+    
+    }
+    
+    \vspace{48pt}
+    
+    {\large Факультет информационных технологий и прикладной математики
+    }
+    
+    \vspace{36pt}
+    
+    {\large Кафедра вычислительной математики и~программирования
+    
+    }
+    
+    
+    \vspace{48pt}
+    
+    Лабораторная работа \textnumero 4 по курсу \enquote{Дискретный анализ}
+    
+    \end{center}
+    
+    \vspace{72pt}
+    
+    \begin{flushright}
+    \begin{tabular}{rl}
+    Студент: & А.\,К. Носов \\
+    Преподаватель: & А.\,А. Кухтичев \\
+    Группа: & М8О-206Б-22 \\
+    Дата: & \\
+    Оценка: & \\
+    Подпись: & \\
+    \end{tabular}
+    \end{flushright}
+    
+    \vfill
+    
+    \begin{center}
+    \bfseries
+    Москва, \the\year
+    \end{center}
+    \end{titlepage}
+    
+    \pagebreak
+
+    \CWHeader{Лабораторная работа \textnumero 4}
+
+    \CWProblem{
+    Необходимо реализовать один из стандартных алгоритмов поиска образцов для указанного алфавита.
+    
+    {\bfseries Вариант алгоритма:} Поиск одного образца при помощи алгоритма Бойера-Мура.
+    
+    {\bfseriesВариант алфавита:} Числа в диапазоне от 0 до 2
+    32 - 1.
+    
+    {\bfseriesФормат ввода}
+    Искомый образец задаётся на первой строке входного файла.
+    
+    В случае, если в задании требуется найти несколько образцов, они задаются по одному на строку вплоть до пустой строки.
+    
+    Затем следует текст, состоящий из слов или чисел, в котором нужно найти заданные образцы.
+    
+    Никаких ограничений на длину строк, равно как и на количество слов или чисел в них, не накладывается.
+    
+    
+    {\bfseriesФормат вывода}
+    
+    В выходной файл нужно вывести информацию о всех вхождениях искомых образцов в обрабатываемый текст: по одному вхождению на строку.
+    
+    Для заданий, в которых требуется найти только один образец, следует вывести два числа через запятую: номер строки и номер слова в строке, с которого начинается найденный образец. В заданиях с большим количеством образцов, на каждое вхождение нужно вывести три числа через запятую: номер строки; номер слова в строке, с которого начинается найденный образец; порядковый номер образца.
+    
+    Нумерация начинается с единицы. Номер строки в тексте должен отсчитываться от его реального начала (то есть, без учёта строк, занятых образцами).
+    
+    Порядок следования вхождений образцов несущественен.
+    }
+    \pagebreak
+
+\section{Описание}
+Требуется реализовать алгоритм Бойера-Мура для поиска подстроки в строке. Притом алфавит представляет собой множество четырех-байтных целых неотрицательных чисел. Алгоритм Бойера-Мура прикладывает образец к тексту и начинает проверку с конца. Также в алгоритме используется две эвристики(правила) для достижения наибольшей скорости. Первое правило - правило плохого символа. В случае,
+когда символ текста и образца не совпал, берется буква несовпавшая буква текста
+и ищется её самое правое вхождение, соответственно образец сдвигается так, чтобы
+совместить эти буквы. Если буква не присутствует в образце, происходит сдвиг на
+длина образца. Второе правило - правило хорошего суффикса. Снова, при несовпадении буквы текста и образца, ищется самая правая подстрока, которая равна совпавшему суффиксу, происходит сдвиг так, чтобы совместить эти подстроки. Если же
+такой подстроки нет, то ищется наибольший префикс, совпадающий с проверенным
+суффиксом, после сдвига префикс прикладывается на место совпавшего суффикса.
+\pagebreak
+
+
+\section{Исходный код}
+
+Здесь располагается реализация алгоритма Бойера-Мура. Поиск самого правого символа осуществляется с помощью бинарного поиска.
+
+
+lab4.cpp
+\begin{lstlisting}[language=C]
+    #include <iostream>
+    #include <vector>
+    #include <unordered_map>
+    #include <sstream>
+    
+    using namespace std;
+    
+    unordered_map<unsigned long, int> BCTable(const vector<unsigned long>& pat) {
+        unordered_map<unsigned long, int> badc;
+        for (int i = 0; i < pat.size(); ++i) {
+            badc[pat[i]] = i; 
+        }
+        return badc;
+    }
+    
+    void computeSuffix(const vector<unsigned long>& pat, vector<int>& suff) {
+        int m = pat.size();
+        suff.resize(m);
+        suff[m - 1] = m;
+        int g = m - 1;
+        int f = 0;
+        for (int i = m - 2; i >= 0; --i) {
+            if (i > g && suff[i + m - 1 - f] < i - g) {
+                suff[i] = suff[i + m - 1 - f];
+            }
+            else {
+                if (i < g) {
+                    g = i;
+                }
+                f = i;
+                while (g >= 0 && pat[g] == pat[g + m - 1 - f]) {
+                    --g;
+                }
+                suff[i] = f - g;
+            }
+        }
+    }
+    
+    vector<int> GSTable(const vector<unsigned long>& pat) {
+        vector<int> gs;
+        int m = pat.size();
+        vector<int> suff;
+        computeSuffix(pat, suff);
+        gs.resize(m, m);
+        int j = 0;
+        for (int i = m - 1; i >= 0; --i) {
+            if (suff[i] == i + 1) {
+                for (; j < m - 1 - i; ++j) {
+                    if (gs[j] == m) {
+                        gs[j] = m - 1 - i;
+                    }
+                }
+            }
+        }
+        for (int i = 0; i <= m - 2; ++i) {
+            gs[m - 1 - suff[i]] = m - 1 - i; 
+        }
+        return gs;
+    }
+    
+    vector<int> BoyerMoore(const vector<unsigned long>& text, const vector<unsigned long>& pat, const unordered_map<unsigned long, int>& badc, const vector<int>& gs){
+        int m = pat.size();
+        int n = text.size();
+        vector<int> ocur;
+        int s = 0; 
+        while (s <= n - m) {
+            int j = m - 1; 
+            while (j >= 0 && pat[j] == text[s + j]) {
+                --j;
+            }
+            if (j < 0) {
+                ocur.push_back(s);
+                s += gs[0];  
+            }
+            else {
+                auto it = badc.find(text[s + j]);
+                int badc_shift = (it != badc.end()) ? it->second : -1;
+                int bc_shift = j - badc_shift;
+                s += max(1, max(bc_shift, gs[j])); 
+            }
+        }
+        return ocur;
+    }
+    
+    int main() {
+        string line;
+        vector<unsigned long> pat;
+        while (getline(cin, line)) {
+            istringstream iss(line);
+            unsigned long num;
+            while (iss >> num) {
+                pat.push_back(num);
+            }
+            if (!pat.empty()) {
+                break; 
+            }
+        }
+        
+        if (pat.empty()) {
+            return 0;  
+        }
+    
+        unordered_map<unsigned long, int> badc = BCTable(pat);
+        vector<int> gs = GSTable(pat);
+    
+        int count = 0;
+        while (getline(cin, line)) {
+            count++;
+            istringstream iss(line);
+            vector<unsigned long> text;
+            unsigned long num;
+            while (iss >> num) {
+                text.push_back(num);
+            }
+            if (text.empty()){
+                continue; 
+            }
+            vector<int> ocur = BoyerMoore(text, pat, badc, gs);
+            for (int s : ocur) {
+                int i = s + 1; 
+                cout << count << ", " << i << endl;
+            }
+        }
+        return 0;
+    }
+\end{lstlisting}
+
+
+\section{Консоль}
+\begin{alltt}
+    123 123 123
+    123 123 123 23424234 324234 2 123 123 123
+    1, 1
+    1, 7
+\end{alltt}
+\pagebreak
+\section{Тест производительности}
+
+Тесты производительности представляют из себя следующее: будет дан шаблон и тексты разной длины. Сравиваться будут время работы наивного алгоритма поиска подстроки в строке и алгоритма Бойера-Мура.
+
+\begin{alltt}
+    BM: 6145 us
+    Naive: 98323 us
+    BM: 9625 us
+    Naive: 129312 us
+    BM: 16623 us
+    Naive: 258624 us
+\end{alltt}
+
+Как видно из результатов теста, алгоритм Бойер-Мур оказался быстрее наивного на всех тестах. Этот результат был ожидаемым, поскольку сложность алгоритма БМ составляет $\Theta(n)$, где $n$ - длина текста, А сложность наивного алгоритма - $\Theta(n * m)$, потому что для каждой позиции текста длины $n$ мы сравниваем все символы шаблона длины $m$. Отсюда такая разница в скорости. 
+\pagebreak
+
+\section{Выводы}
+
+В ходе выполнения лабораторной работы я смог реализовать алгоритм Бойера-Мура
+нахождения подстроки в строке. Существует много разных алгоритмов поиска подстрок, такое разнообразие обусловлено тем, что, к примеру, алгоритм Бойера-Мура
+будет долго искать вхождение разных паттернов в текст, когда как алгоритм АхоКорасик способен искать сразу несколько паттернов в тексте.
+
+\pagebreak
+\begin{thebibliography}{99}
+    \bibitem{Гасфилд}
+    {\itshape Гасфилд Дэн Г 22 Строки, деревья и последовательности в алгоритмах: } Информатика и вычисвычислительная биология / Пер. с англ. И. В. Романовского. — СПб.: Невский Диа-Диалект; БХВ-Петербург, 2003. — 654 с: ил.
+    \end{thebibliography}
+    \pagebreak
+
+\end{document}
